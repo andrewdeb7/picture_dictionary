@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/sbstech-hamid/picture_dictionary/issues"
   },
-  "homepage": "https://github.com/sbstech-hamid/picture_dictionary#readme"
+  "homepage": "https://github.com/sbstech-hamid/picture_dictionary#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
