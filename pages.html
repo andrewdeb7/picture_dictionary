@@ -54,7 +54,7 @@
     document.getElementById('sectionTitle').innerHTML = parameters.get('name');
     let contentId = parameters.get('id');
     let photoId = 1;
-    let baseUrl = 'http://localhost:4002';
+    let baseUrl = 'https://ista330-spring2020-p2-api.herokuapp.com';
     fetch(`${baseUrl}/pages/${contentId}`)
     .then(response => {
       if(response.ok)
