@@ -9,5 +9,9 @@ app.get('/', (request, response) => {
   response.sendFile(__dirname + '/index.html');
 });
 
+app.get('/admin.html', (request, response) => {
+  response.sendFile(__dirname + '/admin.html');
+});
+
 // start the server
 app.listen(port, () => console.log('Listening on port ' + port));
