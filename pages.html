@@ -47,6 +47,7 @@
   </div>
 
   <script type="text/javascript">
+    const local = true;
     console.log(location.search);
     const parameters = new Map(decodeURIComponent(location.search).slice(1).split('&').map(kv => kv.split('=')))
     console.log(parameters);
@@ -54,7 +55,7 @@
     document.getElementById('sectionTitle').innerHTML = parameters.get('name');
     let contentId = parameters.get('id');
     let photoId = 1;
-    let baseUrl = 'https://ista330-spring2020-p2-api.herokuapp.com';
+    let baseUrl = local ? 'http://localhost:4002' : 'https://ista330-spring2020-p2-api.herokuapp.com';
     fetch(`${baseUrl}/pages/${contentId}`)
     .then(response => {
       if(response.ok)

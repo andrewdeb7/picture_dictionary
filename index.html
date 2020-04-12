@@ -49,16 +49,12 @@
       <p style="font-size:15px">All the photos in this
         presentation are taken from Oxford Picture Dictionary.</p>
     </footer>
+
+  <script src='scripts/configuration.js'></script>
+  <script src='scripts/service.js'></script>
   <script type="text/javascript">
-    let url = 'https://ista330-spring2020-p2-api.herokuapp.com/contents';
-    fetch(url)
-    .then(response => {
-      if(response.ok === true) {
-        return response.json();
-      } else {
-        throw Error(`There was an error in the communication with the server: ${response.statusText}`);
-      }
-      })
+
+    service.getAllThemes()
     .then(contents => display(contents))
     .catch(e => {console.log(e);alert(e);});
 
