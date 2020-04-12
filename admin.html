@@ -119,8 +119,10 @@
       </div>
    </div>
 
+   <script src='scripts/configuration.js'></script>
+   <script src='scripts/service.js'></script>
     <script type="text/javascript">
-      const local = true;
+
       var themes = [];
       let themesElement = document.getElementById('themes');
       let themeInputElement = document.getElementById('theme');
@@ -128,7 +130,6 @@
       let imageInputElement = document.getElementById('imageInput');
       var canvas  = document.getElementById('canvas');
       var context = canvas.getContext("2d");
-      let url = local ? 'http://localhost:4002' : 'https://ista330-spring2020-p2-api.herokuapp.com';
       var lastNumberOnImage = 1;
       let themeId = -1;
       let currentImageId = -1;
@@ -150,14 +151,12 @@
           formData.append('image', blob);
 
           if (currentImageId === -1) {
-              fetch(`${url}/image/${themeId}`, {method: 'POST', body: formData})
-              .then(getJsonFromResponse)
+              service.saveImage(themeId, formData)
               .then(x => {console.log(x); currentImageId = x; saveLabelFunction(currentImageId);})
               .catch(e => console.log(e));
 
          } else {
-           fetch(`${url}/image/${currentImageId}`, {method: 'PUT', body: formData})
-           .then(getJsonFromResponse)
+           service.updateImage(currentImageId, formData)
            .then(() => saveLabelFunction(currentImageId))
            .catch(e => console.log(e));
          }
@@ -165,8 +164,7 @@
       }
 
       function getAndDispalyThemes() {
-        fetch(`${url}/contents`)
-        .then(response => response.json())
+        service.getThemes()
         .then(contents => display(contents))
         .catch(e => console.error(e));
       }
@@ -223,26 +221,15 @@
         if(currentLabel.id === -1) {
           method = "post";
         }
-        saveLabel(method, name, currentLabel.x, currentLabel.y, currentLabel.number, currentImageId, currentLabel.id)
+        service.updateLabel(method, name, currentLabel.x, currentLabel.y, currentLabel.number, currentImageId, currentLabel.id)
         .then(() => {modal.style.display = "none";})
         .catch(e => {console.log(e); alert(e)});
         console.log(labels);
       }
 
       function saveLabel(method, name, x, y, number, imageId, id) {
-        return fetch(`${url}/label`, {
-          method: method,
-          headers: {
-              'Content-Type': 'application/json'
-              // 'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: JSON.stringify({name: name,
-                                x: x,
-                                y: y,
-                                number: number,
-                                imageId: imageId,
-                                id: id})})
-        .then(getJsonFromResponse)
+        return
+        service.updateLabel(method, name, x, y, number, imageId, id)
         .then(newLabelId =>  {
           let i = labels.findIndex(x => x.number === number);
           labels[i].id = newLabelId;
@@ -290,8 +277,7 @@
         let theme = themes.find(x => x.name === selectedValue);
         if (theme) { // get the images that are associated with the theme
           themeId = theme.id;
-          fetch(`${url}/pages/${theme.id}`)
-          .then(getJsonFromResponse)
+          service.getImageIds(theme.id)
           .then(imageIds => {addImageIds(imageIds); return imageIds.length;})
           .then(x => {
             if(x > 0) {
@@ -303,17 +289,9 @@
           })
           .catch(e => console.log(e));
         } else { // add the new theme to the themes
-          fetch(`${url}/theme`, {
-            method: "post",
-            headers: {
-                'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: JSON.stringify({theme: selectedValue})})
-          .then(getJsonFromResponse)
+          service.saveTheme(selectedValue)
           .then(newThemeId => themeId = newThemeId)
           .catch(e => console.log(e));
-
           document.getElementById('step2bConatiner').style.display = 'block';
         }
       }
@@ -322,7 +300,7 @@
           let imageId = imageInputElement.value;
           currentImageId = imageId;
           let themeId = themes.find(x => x.name === themeInputElement.value).id;
-          let source = `${url}/pages/${themeId}/image/${imageId}`;
+          let source = service.getImageUrl(themeId, imageId);
           document.getElementById('step3container').style.display = 'block';
           var image = new Image();
           image.crossOrigin = "Anonymous";
@@ -336,8 +314,7 @@
       }
 
       function getLabels() {
-        fetch(`${url}/labels/${currentImageId}`)
-        .then(getJsonFromResponse)
+        service.getLabels(currentImageId)
         .then(x => {
           labels = x;
           lastNumberOnImage = x.reduce((previous, current) => (previous.number > current.number) ? previous : current, {number:1}).number;
@@ -356,13 +333,7 @@
         }
       }
 
-      function getJsonFromResponse(response) {
-        if (response.status === 200) {
-          return response.json();
-        } else {
-          throw Error(response.status);
-        }
-      }
+
 
 
     </script>

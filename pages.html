@@ -45,9 +45,10 @@
   <div  style='float:left;width:30%'>
      <ul id="wordsList"> </ul>
   </div>
-
+  <script src='scripts/configuration.js'></script>
+  <script src='scripts/service.js'></script>
   <script type="text/javascript">
-    const local = true;
+
     console.log(location.search);
     const parameters = new Map(decodeURIComponent(location.search).slice(1).split('&').map(kv => kv.split('=')))
     console.log(parameters);
@@ -55,21 +56,14 @@
     document.getElementById('sectionTitle').innerHTML = parameters.get('name');
     let contentId = parameters.get('id');
     let photoId = 1;
-    let baseUrl = local ? 'http://localhost:4002' : 'https://ista330-spring2020-p2-api.herokuapp.com';
-    fetch(`${baseUrl}/pages/${contentId}`)
-    .then(response => {
-      if(response.ok)
-        return response.json();
-      else return Error(response.status);
-    })
+    service.getImageIds(contentId)
     .then(ids => addImageTags(ids))
     .catch(error => console.error(error));
 
     function addImageTags(ids) {
-
       let imagesSection = document.getElementById('imagesSection');
       for(let id of ids) {
-        let imageUrl = `${baseUrl}/pages/${contentId}/image/${id}`;
+        let imageUrl = service.getImageUrl(contentId, id);
         let image = document.createElement('img');
         image.setAttribute('src', imageUrl);
         image.setAttribute('onclick', `imageClicked(event, ${id})`);
@@ -77,18 +71,9 @@
       }
     }
 
-
-
-
     let ul = document.getElementById('wordsList');
     function imageClicked(event, imageId) {
-      //alert(`${event.offsetX} - ${event.offsetY}`);
-      fetch(`${baseUrl}/words/${contentId}/${imageId}/${event.offsetX}/${event.offsetY}`)
-      .then(response => {
-        if(response.ok)
-          return response.json();
-        else return Error(response.status);
-      })
+      service.getLabel(contentId, imageId, event.offsetX, event.offsetY)
       .then(word => {
         let li = document.createElement('li');
         let t = document.createTextNode(`${word.number} - ${word.name}`);
@@ -96,7 +81,6 @@
         ul.appendChild(li);
       })
       .catch(error => console.error(error));
-
     }
 
 
