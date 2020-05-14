@@ -21,5 +21,13 @@ app.get('/admin.html', (request, response) => {
   response.sendFile(__dirname + '/admin.html');
 });
 
+app.get('/scripts/service.js', (request, response) => {
+  response.sendFile(__dirname + '/scripts/service.js');
+});
+
+app.get('/scripts/configuration.js', (request, response) => {
+  response.sendFile(__dirname + '/scripts/configuration.js');
+});
+
 // start the server
 app.listen(port, () => console.log('Listening on port ' + port));
